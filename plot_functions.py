@@ -81,7 +81,7 @@ def lin_reg(xdata,ydata,sigma=[],model='std', abs_sigma=True,round_dec=1):
     dict['nrsamp'] = n
     
     dict['t_df']  = scipy.stats.t.ppf(0.975, df_e)
-    dict['rmse']  = rmse = int(np.round( np.sqrt( np.mean(residuals**2) )))
+    dict['rmse']  = rmse = np.sqrt( np.mean(residuals**2) )
     dict['r2'] = r2
     dict['s_err'] = np.sqrt(np.sum(residuals**2) / df_e) 
     dict['slope'] = slope
@@ -95,7 +95,7 @@ def lin_reg(xdata,ydata,sigma=[],model='std', abs_sigma=True,round_dec=1):
     unit3 = r'$\frac{µmol}{kg}$'
     unitb = r'$\mathbf{µmol \; kg^{-1} \; yr^{-1}}$'
 
-    dict['label_r2rmse'] = f'R$^{2}$: {r2:0.2f}, RMSE: {rmse} {unit2}'
+    dict['label_r2rmse'] = f'R$^{2}$: {r2:0.2f}, RMSE: {int(rmse)} {unit2}'
     dict['label_simple'] = f'{np.round(slope,round_dec):0.{round_dec}f} ± {np.round(slope_se,round_dec):0.{round_dec}f} ' \
                         + unit
     dict['label_nounit'] = f'{np.round(slope,round_dec):0.{round_dec}f} ± {np.round(slope_se,round_dec):0.{round_dec}f} '
