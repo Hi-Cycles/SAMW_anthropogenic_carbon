@@ -31,15 +31,7 @@ License:
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import xarray as xr
-import os
-from matplotlib.cm import viridis
-from matplotlib.cm import jet
-import seaborn as sns
-import scipy.stats as stats
-from scipy.optimize import curve_fit
-from scipy.interpolate import interp1d
 import pandas as pd
 
 def linear_model(x, m, c):
@@ -49,8 +41,7 @@ r = 106/16 # Redfield reatio
 
 year0 = 1970 # reference age for Lagrangian age
 
-pathC = 'outputs/'
-path = 'PATH_TO_DATA'
+path = 'NCFILES/'
 dsC = xr.open_dataset(path+'interior_carbon_data.nc')
 
 minnum = 10 # minimum number of points to use that year
@@ -59,7 +50,7 @@ minnum = 10 # minimum number of points to use that year
 
 df_anom = {}
 c=0
-for layer in dsC.water_mass:
+for layer in dsC.water_mass: # loop over each water type
     dic_anom = [] ; yrs_anom = []
 
     ds = dsC.sel(water_mass=layer)
@@ -71,7 +62,7 @@ for layer in dsC.water_mass:
     no3 = ds.Nitrate.values
 
     # distance bins
-    if 'Ind' in water_mass:
+    if 'Ind' in dsC.water_mass:
         dd = 500
     else: 
         dd = 1000
@@ -112,7 +103,7 @@ for layer in dsC.water_mass:
     meantot = np.nanmean(mean2, axis=1) ; meantotno3 = np.nanmean(mean2no3, axis=1)
     x = edges_dist[~np.isnan(meantot)]
     y = meantot[~np.isnan(meantot)]
-    if reg == 'Ind':
+    if 'Ind' in layer:
         print('FOR INDIAN WATERS, USE MANUAL REFERENCE INSTEAD OF MEAN')
         if layer == 26.6 :
             x = [1000, 3000]
@@ -131,9 +122,6 @@ for layer in dsC.water_mass:
     fitno3 = np.poly1d( np.polyfit(x, y, 1) )
     meanfitno3 = fitno3(edges_dist)
     # ---
-
-    def no3_fit(x, b):
-        return slope_fit[layer]*x+b
 
     # ------- Nitrate adjustment
     diffno3 = meanno3 - meanfitno3[:,np.newaxis]
@@ -166,7 +154,7 @@ for layer in dsC.water_mass:
         dic_anom.extend( dicl - fit(distl) )
         yrs_anom.extend( datesl )
 
-    # --- save time series for Daniela
-    df = pd.DataFrame({'Date':edges_t, 'DIC_anom':dum, 'std':dumstd})
-    df_anom[water_mass] = pd.DataFrame({'Date':yrs_anom, 'DIC_anom':dic_anom})
-
+    # --- save time series data
+    # Note: df_anom is data used for Canth accumulation rates (has already been added to interior_carbon_data.nc)
+    df = pd.DataFrame({'Date':edges_t, 'DIC_anom_mean':dum, 'DIC_anom_std':dumstd})
+    df_anom = pd.DataFrame({'time_series_Date':yrs_anom, 'time_series_DIC_anomaly':dic_anom})  
