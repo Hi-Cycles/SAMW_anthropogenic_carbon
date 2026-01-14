@@ -102,9 +102,9 @@ def lin_reg(xdata,ydata,sigma=[],model='std', abs_sigma=True,round_dec=1):
     dict['label_r2'] = f'{np.round(slope,round_dec):0.{round_dec}f} ± {np.round(slope_se,round_dec):0.{round_dec}f} ' \
                         + unit + f', R$^{2}$: {r2:0.2f}'
     dict['label_r2_2rows'] = f'{np.round(slope,round_dec):0.{round_dec}f} ± {np.round(slope_se,round_dec):0.{round_dec}f} ' \
-                        + unit + f'\nR$^{2}$: {r2:0.2f}, RMSE: {rmse} {unit2}'
+                        + unit + f'\nR$^{2}$: {r2:0.2f}, RMSE: {int(rmse)} {unit2}'
     dict['label_r2only'] = f'R$^{2}$: {r2:.1f}'
-    dict['stats'] = f'R$^{2}$: {r2:.1g}, RMSE: {rmse}'
+    dict['stats'] = f'R$^{2}$: {r2:.1g}, RMSE: {int(rmse)}'
     dict['start_yr'] = int(np.floor(xdata.min()))
     dict['end_yr'] = int(np.floor(xdata.max()))
     
